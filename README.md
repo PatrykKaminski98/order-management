@@ -7,13 +7,11 @@ Ten projekt został stworzony w ramach zadania rekrutacyjnego na stanowisko **Ja
 - Tworzenie zamówień
 - Potwierdzanie zamówień
 - Anulowanie zamówień
-- Finalizowanie zamówień
+- Zakańczanie zamówień
 - Listowanie produktów
 - Tworzenie nowych użytkowników
 
 Projekt został zbudowany w oparciu o **Spring Boot** i posiada prosty mechanizm uwierzytelniana użytkowników. Schemat bazy danych jest zarządzany za pomocą **Liquibase**, które automatycznie tworzy i wypełnia bazę danych początkowymi danymi.
-Zastosowana została architektura hexagonalna w połączeniu z "component based approach". Zgodnie z tym zalożeniem każdy component aplikacji ma swoje api,
-domene oraz modele(np `Order` i `Product`). Do transferowania obiektów między warstwami zastosowano strategie "two-way-mapping"
 
 ## Endpoints
 
@@ -61,12 +59,11 @@ Tworzy nowe zamówienie na podstawie danych wejściowych.
           {
             "productIdentifier": "string",
             "quantity": "integer"
-          
+          }
         ]
       }
       ```
     - **400 Bad Request**: Niepoprawne dane wejściowe
-	- **404 Not Found**: Podane produkty nie istnieją w bazie danych.
 
 ### 3. Potwierdzenie zamówienia
 
@@ -150,7 +147,7 @@ Rejestruje nowego użytkownika w systemie.
 - **400 Bad Request**: Zostanie zwrócone, gdy dane wejściowe są niepoprawne (np. brak wymaganych pól lub nieprawidłowy format danych).
 - **404 Not Found**: Zasób o podanym identyfikatorze nie istnieje.
 - **409 Conflict**: Wystąpił konflikt, np. próba potwierdzenia zamówienia, które zostało już anulowane.
-- **500 Internal Server Error**: Niespodziewany błąd po stronie serwera.
+- **500 Internal Server Error**: Niespodziewany błąd na serwerze.
 
 ## Bezpieczeństwo
 
@@ -170,6 +167,7 @@ Rejestruje nowego użytkownika w systemie.
 
 - Zarządzanie schematem bazy danych odbywa się za pomocą **Liquibase**.
 - Liquibase automatycznie tworzy tabele i wypełnia je początkowymi danymi, które ułatwiają testowanie i korzystanie z API.
+- Po uruchomieniu aplikacji, Liquibase wykonuje **changeset**, który tworzy wszystkie potrzebne struktury i dane.
 
 ## Uruchamianie aplikacji
 
@@ -190,11 +188,10 @@ Aby uruchomić aplikację, wykonaj poniższe kroki:
 3. **Dostęp do API**:  
    Aplikacja będzie dostępna pod adresem: `http://localhost:8080`.
 
-## Zastosowane technologie/narzędzia
+## Technologie
 
-- **Java 21**
+- **Java 17**
 - **Spring Boot**
-- **Spring Data**
 - **Maven**
 - **Liquibase**
 - **MySQL**
