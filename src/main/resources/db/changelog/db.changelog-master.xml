@@ -1,0 +1,112 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="Create Users table" author="patryk.kaminski">
+    <sql>
+        create table users(username varchar(50) not null primary key,password varchar(500) not null,enabled boolean not null);
+    </sql>
+</changeSet>
+    <changeSet id="Create Authorities table" author="patryk.kaminski">
+        <sql>
+            create table authorities (username varchar(50) not null,authority varchar(50) not null,constraint fk_authorities_users foreign key(username) references users(username));
+            create unique index ix_auth_username on authorities (username,authority);
+        </sql>
+    </changeSet>
+
+    <changeSet id="Create Purchase Order table" author="patryk.kaminski">
+        <createTable tableName="purchase_order">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="order_pk"/>
+            </column>
+            <column name="created" type="datetime" defaultValueComputed="current_timestamp"/>
+            <column name="version" type="bigint" defaultValueNumeric="0"/>
+            <column name="order_key" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="customer_key" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="Create index in Purchase Order on OrderKey column" author="patryk.kaminski">
+        <createIndex tableName="purchase_order" indexName="idx_order_key">
+            <column name="order_key"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="Create Order Item table" author="patryk.kaminski">
+        <createTable tableName="order_item">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="order_item_pk"/>
+            </column>
+            <column name="created" type="datetime" defaultValueComputed="current_timestamp"/>
+            <column name="version" type="bigint" defaultValueNumeric="0"/>
+            <column name="product_identifier" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="quantity" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="bigint">
+                <constraints nullable="false" referencedTableName="purchase_order" referencedColumnNames="id" foreignKeyName="fk_order_item_order"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="Create Product table" author="patryk.kaminski">
+        <createTable tableName="product">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="product_pk"/>
+            </column>
+            <column name="created" type="datetime" defaultValueComputed="current_timestamp"/>
+            <column name="version" type="bigint" defaultValueNumeric="0"/>
+            <column name="product_identifier" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(255)"/>
+            <column name="price" type="decimal">
+                <constraints nullable="false"/>
+            </column>
+            <column name="producer" type="varchar(255)"/>
+            <column name="quantity_available" type="int">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="Create index in Product on ProductIdentifier column" author="patryk.kaminski">
+        <createIndex tableName="product" indexName="idx_product_identifier">
+            <column name="product_identifier"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="Create initial database state" author="patryk.kaminski">
+        <sql>
+            insert into users values ('admin', '{bcrypt}$2a$12$RjH.OINO1b6REwzN/2zFQ.eqKuXqTpnADbb.XFTLu4z139/BP1eOm', 1);
+            insert into users values ('user', '{bcrypt}$2a$12$RjH.OINO1b6REwzN/2zFQ.eqKuXqTpnADbb.XFTLu4z139/BP1eOm ', 1);
+            insert into authorities values ('admin', 'ROLE_admin');
+            insert into authorities values ('user', 'ROLE_user');
+            INSERT INTO product (product_identifier, name, price, producer, quantity_available) VALUES
+                                                                                                             ('PF1835', 'Smartphone Samsung', 1200, 'Samsung', 50),
+                                                                                                             ('HS1836', 'Smartphone Apple', 3500, 'Apple', 25),
+                                                                                                             ('US1837', 'Laptop Dell', 2800, 'Dell', 40),
+                                                                                                             ('DD1838', 'Tablet Lenovo', 1100, 'Lenovo', 75),
+                                                                                                             ('DQ1839', 'Smartwatch Garmin', 850, 'Garmin', 30),
+                                                                                                             ('KY1840', 'Headphones Sony', 300, 'Sony', 120),
+                                                                                                             ('GE1841', 'Gaming Console PlayStation 5', 2500, 'Sony', 15),
+                                                                                                             ('TX1842', 'Smart TV LG 55 inch', 2200, 'LG', 22),
+                                                                                                             ('WQ1843', 'Wireless Earbuds Bose', 600, 'Bose', 80),
+                                                                                                             ('LO1844', 'Smartwatch Apple', 1800, 'Apple', 18),
+                                                                                                             ('SG1845', 'Laptop HP', 2900, 'HP', 35),
+                                                                                                             ('WG1846', 'External SSD 1TB', 400, 'Samsung', 90),
+                                                                                                             ('PL1847', 'Smartphone OnePlus', 1000, 'OnePlus', 60),
+                                                                                                             ('RQ1848', '4K Monitor Asus', 1500, 'Asus', 25),
+                                                                                                             ('AJ1849', 'Smartphone Xiaomi Mi 11', 1200, 'Xiaomi', 45),
+                                                                                                             ('IT1850', 'Drone DJI', 3000, 'DJI', 12);
+
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
