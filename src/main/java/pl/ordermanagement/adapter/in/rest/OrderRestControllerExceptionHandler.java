@@ -22,7 +22,7 @@ public class OrderRestControllerExceptionHandler {
     private static final String TIMESTAMP_UTC = "timestamp UTC:";
 
     @ExceptionHandler({OrderNotFoundException.class, ProductNotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleOrderNotFoundException(NoSuchElementException ex) {
+    public ResponseEntity<ErrorResponse> handleEntityNotFoundException(NoSuchElementException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Resource Not Found");
         problemDetail.setProperty(TIMESTAMP_UTC, ZonedDateTime.now(UTC));
